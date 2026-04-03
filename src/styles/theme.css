@@ -1,0 +1,122 @@
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Cyberpunk Terminal Palette */
+  --color-black: #000000;
+  --color-dark-grey: #050505;
+  --color-cyan-blue: #61dafb;
+  --color-white: #ffffff;
+  --color-grey: #808080;
+  --color-dark-blue: #0a2540;
+
+  /* Base tokens */
+  --background: #000000;
+  --foreground: #ffffff;
+  --card: #050505;
+  --card-foreground: #ffffff;
+  --popover: #050505;
+  --popover-foreground: #ffffff;
+  --primary: #61dafb;
+  --primary-foreground: #000000;
+  --secondary: #050505;
+  --secondary-foreground: #ffffff;
+  --muted: #050505;
+  --muted-foreground: #808080;
+  --accent: #61dafb;
+  --accent-foreground: #000000;
+  --destructive: #ff004c;
+  --destructive-foreground: #ffffff;
+  --border: rgba(97, 218, 251, 0.2);
+  --input: rgba(97, 218, 251, 0.2);
+  --input-background: #050505;
+  --ring: #61dafb;
+  --radius: 0;
+  
+  /* Font */
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --font-size: 16px;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-input-background: var(--input-background);
+  --color-ring: var(--ring);
+  --radius-sm: 0;
+  --radius-md: 0;
+  --radius-lg: 0;
+  --radius-xl: 0;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-mono);
+  }
+
+  html {
+    font-size: var(--font-size);
+    scroll-behavior: smooth;
+  }
+
+  h1 {
+    font-weight: var(--font-weight-medium);
+    line-height: 1.2;
+  }
+
+  h2 {
+    font-weight: var(--font-weight-medium);
+    line-height: 1.3;
+  }
+
+  h3 {
+    font-weight: var(--font-weight-medium);
+    line-height: 1.4;
+  }
+
+  h4 {
+    font-weight: var(--font-weight-medium);
+    line-height: 1.4;
+  }
+
+  p {
+    line-height: 1.6;
+  }
+
+  label {
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  button {
+    font-weight: var(--font-weight-normal);
+    line-height: 1.5;
+  }
+
+  input {
+    font-weight: var(--font-weight-normal);
+    line-height: 1.5;
+  }
+}

@@ -147,16 +147,16 @@ export function ExperienceV2() {
         </div>
 
         {/* Filter tabs */}
-        <div className="flex gap-0 border border-[#61dafb]/20 w-fit">
+        <div className="experience-filter flex flex-wrap gap-3">
           {filterCategories.map(cat => (
             <button
               key={cat}
               onClick={() => { setActiveFilter(cat); setExpanded(null); }}
-              className="px-4 py-2 text-xs font-mono transition-all duration-200"
+              className="experience-filter-button px-4 py-2 text-xs font-mono transition-all duration-200"
               style={{
                 background: activeFilter === cat ? 'rgba(97,218,251,0.08)' : 'transparent',
                 color: activeFilter === cat ? '#67e8f9' : 'rgba(255,255,255,0.4)',
-                borderBottom: activeFilter === cat ? '2px solid #61dafb' : '2px solid transparent',
+                borderBottom: 'none',
               }}
             >
               {cat}

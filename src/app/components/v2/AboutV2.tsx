@@ -72,8 +72,8 @@ export function AboutV2() {
   };
 
   return (
-    <section id="about" className="min-h-screen flex items-center justify-center px-6 py-20">
-      <div className="max-w-4xl w-full space-y-12">
+    <section id="about" className="min-h-screen flex items-start justify-center px-6 pt-28 pb-20">
+      <div className="max-w-4xl w-full space-y-8">
         <div className="flex items-center gap-3">
           <span className="text-[#61dafb]">01.</span>
           <h2 className="text-3xl">About</h2>
@@ -116,16 +116,16 @@ export function AboutV2() {
           {/* Skills */}
           <div className="space-y-6">
             {/* Tab bar */}
-            <div className="flex gap-0 border border-[#61dafb]/20">
+            <div className="about-filter flex flex-wrap gap-3">
               {tabs.map((tab) => (
                 <button
                   key={tab.key}
                   onClick={() => setActiveTab(tab.key)}
-                  className="flex-1 px-3 py-2 text-xs font-mono transition-all duration-200"
+                  className="about-filter-button px-3 py-2 text-xs font-mono transition-all duration-200"
                   style={{
                     background: activeTab === tab.key ? 'rgba(97,218,251,0.08)' : 'transparent',
                     color: activeTab === tab.key ? '#67e8f9' : 'rgba(255,255,255,0.4)',
-                    borderBottom: activeTab === tab.key ? '2px solid #61dafb' : '2px solid transparent',
+                    borderBottom: 'none',
                   }}
                 >
                   {tab.label}

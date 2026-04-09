@@ -1,122 +1,904 @@
 @custom-variant dark (&:is(.dark *));
 
-:root {
-  /* Cyberpunk Terminal Palette */
-  --color-black: #000000;
-  --color-dark-grey: #050505;
-  --color-cyan-blue: #61dafb;
-  --color-white: #ffffff;
-  --color-grey: #808080;
-  --color-dark-blue: #0a2540;
+/* ================================================================
+   EDITORIAL MONOCHROME  —  成品 reference build
+   Fonts : Syne 800 (display) · DM Sans (body) · JetBrains Mono (code)
+   Palette: #080808 bg · #f2f2f2 text · no colour accents
+   ================================================================ */
 
-  /* Base tokens */
-  --background: #000000;
-  --foreground: #ffffff;
-  --card: #050505;
-  --card-foreground: #ffffff;
-  --popover: #050505;
-  --popover-foreground: #ffffff;
-  --primary: #61dafb;
-  --primary-foreground: #000000;
-  --secondary: #050505;
-  --secondary-foreground: #ffffff;
-  --muted: #050505;
-  --muted-foreground: #808080;
-  --accent: #61dafb;
-  --accent-foreground: #000000;
-  --destructive: #ff004c;
+:root {
+  --background:           #080808;
+  --foreground:           #f2f2f2;
+  --card:                 #111111;
+  --card-foreground:      #f2f2f2;
+  --popover:              #111111;
+  --popover-foreground:   #f2f2f2;
+  --primary:              #f2f2f2;
+  --primary-foreground:   #080808;
+  --secondary:            #181818;
+  --secondary-foreground: #f2f2f2;
+  --muted:                #181818;
+  --muted-foreground:     #555555;
+  --accent:               #f2f2f2;
+  --accent-foreground:    #080808;
+  --destructive:          #ff4444;
   --destructive-foreground: #ffffff;
-  --border: rgba(97, 218, 251, 0.2);
-  --input: rgba(97, 218, 251, 0.2);
-  --input-background: #050505;
-  --ring: #61dafb;
-  --radius: 0;
-  
-  /* Font */
-  --font-mono: 'JetBrains Mono', monospace;
-  --font-weight-medium: 500;
+  --border:           rgba(242, 242, 242, 0.1);
+  --input:            rgba(242, 242, 242, 0.07);
+  --input-background: #111111;
+  --ring:             rgba(242, 242, 242, 0.5);
+  --radius:           14px;
+
+  --font-mono:          'DM Sans', sans-serif;
+  --font-display:       'Syne', sans-serif;
+  --font-weight-medium: 600;
   --font-weight-normal: 400;
-  --font-size: 16px;
+  --font-size:          16px;
+
+  /* colour-token bridge for Tailwind */
+  --color-black:     #080808;
+  --color-dark-grey: #111111;
+  --color-cyan-blue: #f2f2f2;
+  --color-white:     #f2f2f2;
+  --color-grey:      #555555;
+  --color-dark-blue: #181818;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
+  --color-background:           var(--background);
+  --color-foreground:           var(--foreground);
+  --color-card:                 var(--card);
+  --color-card-foreground:      var(--card-foreground);
+  --color-popover:              var(--popover);
+  --color-popover-foreground:   var(--popover-foreground);
+  --color-primary:              var(--primary);
+  --color-primary-foreground:   var(--primary-foreground);
+  --color-secondary:            var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
+  --color-muted:                var(--muted);
+  --color-muted-foreground:     var(--muted-foreground);
+  --color-accent:               var(--accent);
+  --color-accent-foreground:    var(--accent-foreground);
+  --color-destructive:          var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-input-background: var(--input-background);
-  --color-ring: var(--ring);
-  --radius-sm: 0;
-  --radius-md: 0;
-  --radius-lg: 0;
-  --radius-xl: 0;
+  --color-border:               var(--border);
+  --color-input:                var(--input);
+  --color-input-background:     var(--input-background);
+  --color-ring:                 var(--ring);
+  --radius-sm: calc(var(--radius) - 6px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 4px);
+  --radius-xl: calc(var(--radius) + 10px);
 }
 
+
+/* ================================================================
+   BASE
+   ================================================================ */
+
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
+  * { @apply border-border outline-ring/50; }
 
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-mono);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   html {
     font-size: var(--font-size);
     scroll-behavior: smooth;
+    scrollbar-width: thin;
+    scrollbar-color: #2a2a2a #080808;
   }
 
-  h1 {
-    font-weight: var(--font-weight-medium);
-    line-height: 1.2;
+  /* Display font for all headings */
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+  }
+  h1 { font-weight: 800; line-height: 1.05; letter-spacing: -0.04em; }
+  h2 { font-weight: 700; line-height: 1.15; letter-spacing: -0.025em; }
+  h3 { font-weight: 600; line-height: 1.3;  letter-spacing: -0.01em; }
+  h4 { font-weight: 600; line-height: 1.4; }
+
+  p        { line-height: 1.75; }
+  label    { font-weight: 500; line-height: 1.5; }
+  button   { font-weight: 500; line-height: 1.5; }
+  input    { font-weight: 400; line-height: 1.5; }
+
+  /* Preserve monospace only in code blocks */
+  pre, code, kbd {
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 0.84rem !important;
+    letter-spacing: 0 !important;
+  }
+}
+
+
+/* ================================================================
+   SCROLLBAR
+   ================================================================ */
+
+::-webkit-scrollbar             { width: 4px; }
+::-webkit-scrollbar-track       { background: #080808; }
+::-webkit-scrollbar-thumb       { background: #2a2a2a; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #444; }
+
+
+/* ================================================================
+   ROOT WRAPPER  — override hardcoded bg-black from App2.tsx
+   ================================================================ */
+
+.bg-black { background-color: #080808 !important; }
+.text-white { color: #f2f2f2 !important; }
+
+
+/* ================================================================
+   BACKGROUND GRID  — make the decorative grid invisible
+   ================================================================ */
+
+.fixed.inset-0.pointer-events-none { opacity: 0 !important; }
+
+
+/* ================================================================
+   HEADER
+   ================================================================ */
+
+header {
+  background: rgba(8, 8, 8, 0.88) !important;
+  backdrop-filter: blur(24px) !important;
+  -webkit-backdrop-filter: blur(24px) !important;
+  border-bottom: 1px solid rgba(242, 242, 242, 0.06) !important;
+  box-shadow: 0 1px 0 rgba(242,242,242,0.04) !important;
+}
+
+/* Logo */
+header span {
+  font-family: var(--font-display) !important;
+  font-weight: 700 !important;
+  font-size: 0.95rem !important;
+  letter-spacing: -0.02em !important;
+  color: #f2f2f2 !important;
+}
+header svg { color: #f2f2f2 !important; opacity: 0.5; }
+
+/* Nav links */
+header nav a {
+  font-family: var(--font-display) !important;
+  font-size: 0.78rem !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.01em !important;
+  color: rgba(242, 242, 242, 0.45) !important;
+  padding: 5px 12px !important;
+  border-radius: 99px !important;
+  transition: all 0.18s ease !important;
+  text-transform: none !important;
+}
+header nav a:hover {
+  color: #f2f2f2 !important;
+  background: rgba(242,242,242,0.07) !important;
+}
+
+/* Last link = "Get in touch" pill button (contact link) */
+header nav a[href="#contact"] {
+  color: #080808 !important;
+  background: #f2f2f2 !important;
+  padding: 6px 18px !important;
+  font-weight: 600 !important;
+}
+header nav a[href="#contact"]:hover {
+  background: #ffffff !important;
+  color: #080808 !important;
+}
+
+
+/* ================================================================
+   HERO  —  full-viewport 60/40 split, big name left, photo right
+   ================================================================ */
+
+/* Section fills viewport, no padding (header is fixed overlay) */
+section:first-of-type {
+  padding: 0 !important;
+  min-height: 100vh;
+}
+
+/* Override the max-w-7xl wrapper to fill full width */
+section:first-of-type > div {
+  max-width: 100% !important;
+  width: 100% !important;
+  padding: 0 !important;
+}
+
+/* Grid: 58% text | 42% photo, full height */
+section:first-of-type .grid {
+  grid-template-columns: 58fr 42fr !important;
+  gap: 0 !important;
+  align-items: stretch !important;
+  min-height: 100vh !important;
+}
+
+/* Text column: LEFT */
+section:first-of-type .grid > div:first-child { order: 2; }
+section:first-of-type .grid > div:last-child  { order: 1; }
+
+/* Left column — vertically centred, generous padding */
+section:first-of-type .grid > div:last-child {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  padding: 8rem 5rem 5rem 6rem !important;
+  gap: 0 !important;
+}
+
+/* Hide the space-y-6 gap so we control spacing ourselves */
+section:first-of-type .space-y-6 {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0 !important;
+}
+
+/* ── NAME ────────────────────────────────── */
+
+/* Collapse the h1 to 0 so the "Hello, I'm" text node is invisible */
+section:first-of-type h1 {
+  font-size: 0 !important;
+  line-height: 1 !important;
+  margin: 0 0 1.5rem 0 !important;
+}
+
+/* "Hello, I'm" label — injected as ::before, text node stays hidden */
+section:first-of-type h1::before {
+  content: "Hello, I'm";
+  display: block;
+  font-family: 'DM Sans', sans-serif !important;
+  font-size: 1rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  color: rgba(242,242,242,0.38);
+  margin-bottom: 0.6rem;
+}
+
+/* Victoria Xie. — enormous */
+section:first-of-type h1 span {
+  display: block !important;
+  font-family: 'Syne', sans-serif !important;
+  font-size: clamp(4.5rem, 7.5vw, 8rem) !important;
+  font-weight: 800 !important;
+  line-height: 0.95 !important;
+  letter-spacing: -0.04em !important;
+  color: #f2f2f2 !important;
+  background: none !important;
+  -webkit-text-fill-color: #f2f2f2 !important;
+}
+
+/* ── IDE BOX — hidden ───────────────────── */
+section:first-of-type div[class*="border border-["] {
+  display: none !important;
+}
+
+/* ── SUBTITLE ───────────────────────────── */
+section:first-of-type p {
+  color: rgba(242,242,242,0.65) !important;
+  font-size: 0.95rem !important;
+  line-height: 1.75 !important;
+  max-width: 420px !important;
+  margin: 0 !important;
+}
+
+/* ── PHOTO COLUMN ────────────────────────── */
+
+/* Right column — stretches full viewport height */
+section:first-of-type .grid > div:first-child {
+  position: relative !important;
+  overflow: hidden !important;
+  min-height: 100vh !important;
+}
+
+/* Photo wrapper fills column */
+section:first-of-type div[class*="relative overflow-hidden"] {
+  border-radius: 0 !important;
+  overflow: hidden !important;
+  box-shadow: none !important;
+  height: 100% !important;
+  min-height: 100vh !important;
+  position: absolute !important;
+  inset: 0 !important;
+}
+
+/* Photo itself — higher contrast to push grey bg darker */
+img[alt="Victoria Xie"] {
+  filter: grayscale(1) contrast(1.6) brightness(0.68) !important;
+  transition: filter 0.6s ease !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center top !important;
+  display: block !important;
+}
+img[alt="Victoria Xie"]:hover {
+  filter: grayscale(0.5) contrast(1.3) brightness(0.8) !important;
+}
+
+/* Gradient overlay — fades grey studio bg into page bg from all edges.
+   Left edge fade is strongest so it blends into the text column. */
+section:first-of-type .grid > div:first-child::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  background:
+    linear-gradient(to right,  #080808 0%, rgba(8,8,8,0.85) 12%, rgba(8,8,8,0.2) 35%, transparent 60%),
+    linear-gradient(to bottom, #080808 0%, rgba(8,8,8,0.6) 10%, transparent 28%),
+    linear-gradient(to top,    #080808 0%, rgba(8,8,8,0.5) 8%,  transparent 25%),
+    radial-gradient(ellipse at 60% 40%, transparent 40%, rgba(8,8,8,0.55) 100%);
+}
+
+/* IDE / code box */
+section:first-of-type div[class*="border border-["] {
+  border-radius: var(--radius) !important;
+  border: 1px solid rgba(242,242,242,0.09) !important;
+  background: #0f0f0f !important;
+  overflow: hidden;
+}
+
+/* IDE tab bar */
+div[class*="border-b border-[#61dafb"] {
+  background: #111 !important;
+  border-bottom: 1px solid rgba(242,242,242,0.07) !important;
+  border-radius: var(--radius) var(--radius) 0 0 !important;
+}
+/* Active tab indicator */
+div[class*="border-b-2 border-\[#61dafb\]"] {
+  border-bottom: 2px solid rgba(242,242,242,0.55) !important;
+}
+div[class*="bg-\[#61dafb\]\/10"] {
+  background: rgba(242,242,242,0.05) !important;
+}
+div[class*="w-2 h-2 rounded-full bg-\[#61dafb\]"] {
+  background: rgba(242,242,242,0.4) !important;
+}
+span[class*="text-xs text-\[#61dafb\]"] {
+  color: rgba(242,242,242,0.5) !important;
+}
+
+/* IDE code area */
+div[class*="p-6 min-h-"] {
+  background: #090909 !important;
+}
+
+/* Blinking cursor */
+span[class*="w-2 h-4 bg-\[#61dafb\]"] {
+  background: #f2f2f2 !important;
+  opacity: 0.8;
+}
+
+/* IDE status bar */
+div[class*="border-t border-[#61dafb"][class*="px-4 py-1"] {
+  background: #0f0f0f !important;
+  border-top: 1px solid rgba(242,242,242,0.07) !important;
+  border-radius: 0 0 var(--radius) var(--radius) !important;
+  color: rgba(242,242,242,0.28) !important;
+}
+div[class*="w-1.5 h-1.5 rounded-full bg-\[#61dafb\]"] {
+  background: rgba(242,242,242,0.5) !important;
+}
+span[class*="text-\[#61dafb\]"] {
+  color: rgba(242,242,242,0.4) !important;
+}
+
+
+/* ================================================================
+   SECTION HEADINGS  —  editorial label + large title
+   ================================================================ */
+
+/* Section header row + all ancestors — force descenders to show */
+section#about, section#experience, section#projects, section#contact {
+  overflow: visible !important;
+}
+section#about > div, section#experience > div,
+section#projects > div, section#contact > div {
+  overflow: visible !important;
+}
+section > div > div[class*="flex items-center gap-3"] {
+  align-items: flex-end !important;
+  overflow: visible !important;
+  padding-bottom: 0 !important;
+}
+
+/* Section number: "01." → small uppercase muted label */
+section > div > div > span[class*="text-[#61dafb]"]:first-child,
+section > div > span[class*="text-[#61dafb]"]:first-child {
+  font-family: var(--font-display) !important;
+  font-size: 0.65rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.16em !important;
+  color: rgba(242,242,242,0.25) !important;
+  text-transform: uppercase !important;
+}
+
+/* Section title */
+section h2 {
+  display: block !important;
+  font-size: clamp(2rem, 3.5vw, 3rem) !important;
+  line-height: 1.2 !important;
+  color: #f2f2f2 !important;
+  overflow: visible !important;
+  clip-path: none !important;
+  padding-bottom: 0 !important;
+  transform: translateY(0.04em);
+}
+
+/* Divider line */
+div[class*="flex-1 h-px"],
+div[class*="h-px bg-[#61dafb"] {
+  height: 1px !important;
+  background: rgba(242,242,242,0.08) !important;
+  box-shadow: none !important;
+}
+
+
+/* ================================================================
+   ABOUT  —  bio + skill tabs
+   ================================================================ */
+
+/* Bio text */
+section#about p,
+section#about div[class*="space-y-6"] > p {
+  color: rgba(242,242,242,0.82) !important;
+  font-size: 0.92rem !important;
+}
+
+/* Highlight text (Dalyell scholar) */
+section#about span[class*="text-[#67e8f9]"],
+span[class*="text-\[#67e8f9\]"] {
+  color: #f2f2f2 !important;
+  font-weight: 600 !important;
+}
+
+/* Award block */
+div[class*="border-l-2 border-\[#61dafb"] {
+  border-left: 2px solid rgba(242,242,242,0.14) !important;
+  padding-left: 1.1rem !important;
+  transition: border-color 0.2s ease !important;
+}
+div[class*="border-l-2 border-\[#61dafb"]:hover {
+  border-left-color: rgba(242,242,242,0.45) !important;
+}
+div[class*="border-l-2"] div[class*="text-\[#67e8f9\]"] {
+  color: #f2f2f2 !important;
+  font-weight: 600 !important;
+  font-size: 0.82rem !important;
+}
+div[class*="border-l-2"] div[class*="text-white\/50"] {
+  color: rgba(242,242,242,0.5) !important;
+  font-size: 0.75rem !important;
+}
+
+/* Skill tab bar — pill container */
+section#about .about-filter {
+  width: fit-content !important;
+}
+
+section#about .about-filter-button {
+  border: 1px solid rgba(242,242,242,0.1) !important;
+  border-radius: 999px !important;
+  font-family: var(--font-display) !important;
+  font-size: 0.7rem !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.04em !important;
+  padding: 0.7rem 1.35rem !important;
+  transition: all 0.18s ease !important;
+  color: rgba(242,242,242,0.68) !important;
+  background: #111 !important;
+  line-height: 1 !important;
+}
+
+section#about .about-filter-button:hover {
+  background: rgba(242,242,242,0.08) !important;
+  border-color: rgba(242,242,242,0.18) !important;
+  color: #f2f2f2 !important;
+  transform: none !important;
+}
+
+section#about .about-filter-button[style*="97,218,251,0.08"] {
+  background: rgba(242,242,242,0.12) !important;
+  border-color: rgba(242,242,242,0.2) !important;
+  color: #f2f2f2 !important;
+}
+
+/* Skill bar fill — white instead of cyan */
+div[class*="cursor-default"] > div[class*="h-px"] > div {
+  background: rgba(242,242,242,0.75) !important;
+  box-shadow: none !important;
+}
+
+/* Skill bar track — subtle bg */
+div[class*="cursor-default"] > div[class*="h-px"] {
+  background: rgba(242,242,242,0.08) !important;
+}
+
+/* Hover label — grey instead of cyan (overrides React inline style) */
+div[class*="cursor-default"]:hover span[class*="transition-opacity"] {
+  color: rgba(242,242,242,0.7) !important;
+}
+
+/* "Hover a skill" hint */
+p[class*="text-white\/30"] {
+  color: rgba(242,242,242,0.2) !important;
+  font-size: 0.72rem !important;
+}
+
+
+/* ================================================================
+   EXPERIENCE  —  accordion list
+   ================================================================ */
+
+section#experience .experience-filter {
+  width: fit-content !important;
+}
+
+section#experience .experience-filter-button {
+  border: 1px solid rgba(242,242,242,0.1) !important;
+  border-radius: 999px !important;
+  padding: 0.7rem 1.35rem !important;
+  background: #111 !important;
+  color: rgba(242,242,242,0.68) !important;
+  letter-spacing: 0.01em !important;
+  line-height: 1 !important;
+}
+
+section#experience .experience-filter-button:hover {
+  background: rgba(242,242,242,0.08) !important;
+  border-color: rgba(242,242,242,0.18) !important;
+  color: #f2f2f2 !important;
+  transform: none !important;
+}
+
+section#experience .experience-filter-button[style*="97,218,251,0.08"] {
+  background: rgba(242,242,242,0.12) !important;
+  border-color: rgba(242,242,242,0.2) !important;
+  color: #f2f2f2 !important;
+}
+
+section#experience div[class*="border border-["],
+section#experience div[class*="border-[#61dafb"] {
+  background: #0e0e0e !important;
+  border: 1px solid rgba(242,242,242,0.07) !important;
+  border-radius: var(--radius) !important;
+  transition: border-color 0.2s ease, transform 0.22s ease, box-shadow 0.22s ease !important;
+  animation: none !important;
+  overflow: hidden !important;
+}
+section#experience div[class*="border border-["]:hover,
+section#experience div[class*="border-[#61dafb"]:hover {
+  border-color: rgba(242,242,242,0.18) !important;
+  background: rgba(242,242,242,0.04) !important;
+  transform: translateX(5px) !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5) !important;
+}
+
+section#experience div[class*="border border-["] > button,
+section#experience div[class*="border-[#61dafb"] > button {
+  display: block !important;
+  border-radius: inherit !important;
+  background: transparent !important;
+}
+
+section#experience div[class*="border border-["] > button:hover,
+section#experience div[class*="border-[#61dafb"] > button:hover {
+  background: transparent !important;
+}
+
+/* Role name */
+section#experience h3 { color: #f2f2f2 !important; font-size: 0.95rem !important; }
+
+/* Organisation name */
+section#experience div[class*="text-\[#61dafb\] text-sm"] {
+  color: rgba(242,242,242,0.6) !important;
+  font-size: 0.78rem !important;
+}
+
+/* Period */
+section#experience span[class*="text-white\/40"] {
+  color: rgba(242,242,242,0.45) !important;
+  font-size: 0.74rem !important;
+}
+
+/* Tags */
+section#experience span[class*="text-xs border border-\[#61dafb"] {
+  border: 1px solid rgba(242,242,242,0.12) !important;
+  color: rgba(242,242,242,0.35) !important;
+  border-radius: 99px !important;
+  font-size: 0.65rem !important;
+  letter-spacing: 0.04em !important;
+  padding: 3px 10px !important;
+}
+
+/* Expanded bullet */
+section#experience li > span[class*="text-\[#61dafb\]"] {
+  color: rgba(242,242,242,0.25) !important;
+}
+section#experience li > span[class*="text-white\/60"] {
+  color: rgba(242,242,242,0.7) !important;
+  font-size: 0.87rem !important;
+}
+
+/* Expanded divider */
+section#experience div[class*="border-t border-\[#61dafb\]\/10"] {
+  border-top: 1px solid rgba(242,242,242,0.06) !important;
+}
+
+
+/* ================================================================
+   PROJECTS / HIGHLIGHTS  —  accordion cards
+   ================================================================ */
+
+section#projects div[class*="border border-["],
+section#projects div[class*="border-[#61dafb"] {
+  background: #0e0e0e !important;
+  border: 1px solid rgba(242,242,242,0.07) !important;
+  border-radius: var(--radius) !important;
+  transition: border-color 0.2s ease, transform 0.22s ease, box-shadow 0.22s ease !important;
+  animation: none !important;
+  overflow: hidden !important;
+}
+section#projects div[class*="border border-["]:hover,
+section#projects div[class*="border-[#61dafb"]:hover {
+  border-color: rgba(242,242,242,0.18) !important;
+  background: rgba(242,242,242,0.04) !important;
+  transform: translateY(-4px) !important;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.55) !important;
+}
+
+section#projects div[class*="border border-["] > button,
+section#projects div[class*="border-[#61dafb"] > button {
+  display: block !important;
+  border-radius: inherit !important;
+  background: transparent !important;
+}
+
+section#projects div[class*="border border-["] > button:hover,
+section#projects div[class*="border-[#61dafb"] > button:hover {
+  background: transparent !important;
+}
+
+/* Icon box */
+div[class*="mt-0.5 p-2 border shrink-0"] {
+  border: 1px solid rgba(242,242,242,0.1) !important;
+  border-radius: 10px !important;
+  color: rgba(242,242,242,0.5) !important;
+  background: rgba(242,242,242,0.03) !important;
+  transition: background 0.2s ease !important;
+}
+div[class*="mt-0.5 p-2 border shrink-0"]:hover {
+  background: rgba(242,242,242,0.07) !important;
+}
+
+/* Status badges */
+span[class*="px-2 py-0.5 text-xs border"][style] {
+  border: 1px solid rgba(242,242,242,0.15) !important;
+  color: rgba(242,242,242,0.5) !important;
+  border-radius: 99px !important;
+  font-size: 0.65rem !important;
+  letter-spacing: 0.05em !important;
+  background: transparent !important;
+}
+
+/* Tech tags */
+section#projects span[class*="text-xs text-white\/40"] {
+  color: rgba(242,242,242,0.3) !important;
+  font-size: 0.74rem !important;
+}
+
+/* Expanded bullet marker */
+section#projects li > span[style] {
+  color: rgba(242,242,242,0.25) !important;
+}
+section#projects li > span[class*="text-white\/60"] {
+  color: rgba(242,242,242,0.7) !important;
+  font-size: 0.87rem !important;
+}
+
+/* Expanded divider */
+section#projects div[class*="border-t border-\[#61dafb\]\/10"] {
+  border-top: 1px solid rgba(242,242,242,0.06) !important;
+}
+
+
+/* ================================================================
+   CONTACT
+   ================================================================ */
+
+section#contact p[class*="text-white\/70"] {
+  color: rgba(242,242,242,0.7) !important;
+  font-size: 0.9rem !important;
+  line-height: 1.75 !important;
+}
+
+/* Contact info blocks */
+section#contact div[class*="border-l-2 border-\[#61dafb"] {
+  border-left: 2px solid rgba(242,242,242,0.12) !important;
+}
+section#contact div[class*="border-l-2"] p:first-child {
+  color: rgba(242,242,242,0.28) !important;
+  font-size: 0.78rem !important;
+}
+section#contact div[class*="border-l-2"] p:last-child {
+  color: rgba(242,242,242,0.65) !important;
+  font-size: 0.88rem !important;
+  font-weight: 500 !important;
+}
+
+/* Terminal prompt line */
+div[class*="flex items-center gap-2 text-\[#61dafb\]"] {
+  color: rgba(242,242,242,0.22) !important;
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 0.78rem !important;
+}
+div[class*="flex items-center gap-2"] span[class*="text-white\/40"] {
+  color: rgba(242,242,242,0.18) !important;
+}
+
+/* Contact link cards */
+a[class*="border"][class*="p-4"],
+div[class*="border"][class*="p-4"] {
+  border: 1px solid rgba(242,242,242,0.07) !important;
+  border-radius: var(--radius) !important;
+  background: #0e0e0e !important;
+  transition: all 0.22s ease !important;
+  animation: none !important;
+}
+a[class*="border"][class*="p-4"]:hover {
+  border-color: rgba(242,242,242,0.2) !important;
+  background: rgba(242,242,242,0.04) !important;
+  transform: translateX(6px) !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4) !important;
+}
+
+/* Icons */
+a[class*="border"][class*="p-4"] svg,
+div[class*="border"][class*="p-4"] svg {
+  color: rgba(242,242,242,0.45) !important;
+}
+
+/* Label */
+div[class*="text-white\/50 text-xs"] {
+  color: rgba(242,242,242,0.28) !important;
+}
+
+/* Value text hover */
+div[class*="text-white text-sm group-hover\:text-\[#61dafb\]"] {
+  color: rgba(242,242,242,0.88) !important;
+  font-weight: 500 !important;
+  font-size: 0.88rem !important;
+}
+a:hover div[class*="text-white text-sm"] {
+  color: #f2f2f2 !important;
+}
+
+/* Footer separator */
+div[class*="border-t border-[#61dafb"][class*="pt-12"] {
+  border-top: 1px solid rgba(242,242,242,0.07) !important;
+  box-shadow: none !important;
+}
+div[class*="text-white\/40"] { color: rgba(242,242,242,0.22) !important; }
+div[class*="h-1 w-1 bg-\[#61dafb\]"] { background: rgba(242,242,242,0.35) !important; }
+
+
+/* ================================================================
+   FOOTER
+   ================================================================ */
+
+.site-footer {
+  background: #080808 !important;
+}
+
+.site-footer-panel {
+  min-height: 440px;
+  overflow: hidden !important;
+  box-shadow: inset 0 1px 0 rgba(242,242,242,0.04) !important;
+}
+
+.site-footer-marquee {
+  position: absolute;
+  left: 50%;
+  bottom: -0.24em;
+  transform: translateX(-50%);
+  font-family: var(--font-display) !important;
+  font-size: clamp(7.5rem, 17vw, 17rem);
+  font-weight: 800;
+  line-height: 0.78;
+  letter-spacing: -0.065em;
+  white-space: nowrap;
+  color: #f2f2f2;
+  z-index: 0;
+}
+
+.site-footer-content {
+  min-height: 440px;
+}
+
+.site-footer-note {
+  max-width: 32rem;
+}
+
+.site-footer-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 1.4rem 3rem 2rem;
+  border-top: 1px solid rgba(242,242,242,0.08);
+  background: rgba(5,5,5,0.96) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.site-footer-link {
+  color: rgba(242,242,242,0.62) !important;
+  transition: color 0.18s ease !important;
+}
+
+.site-footer-link:hover {
+  color: #f2f2f2 !important;
+}
+
+@media (max-width: 768px) {
+  .site-footer-panel,
+  .site-footer-content {
+    min-height: 340px;
   }
 
-  h2 {
-    font-weight: var(--font-weight-medium);
-    line-height: 1.3;
+  .site-footer-marquee {
+    left: 50%;
+    bottom: -0.18em;
+    transform: translateX(-50%);
+    font-size: clamp(5.2rem, 24vw, 8.5rem);
   }
 
-  h3 {
-    font-weight: var(--font-weight-medium);
-    line-height: 1.4;
+  .site-footer-bar {
+    padding: 1.2rem 1.5rem 1.4rem;
   }
+}
 
-  h4 {
-    font-weight: var(--font-weight-medium);
-    line-height: 1.4;
-  }
 
-  p {
-    line-height: 1.6;
-  }
+/* ================================================================
+   BUTTONS  —  rounded pill, clean
+   ================================================================ */
 
-  label {
-    font-weight: var(--font-weight-medium);
-    line-height: 1.5;
-  }
+button {
+  border-radius: 99px !important;
+  transition: all 0.18s ease !important;
+}
+button:hover { background: rgba(242,242,242,0.08) !important; }
+button:active { transform: scale(0.97) !important; }
 
-  button {
-    font-weight: var(--font-weight-normal);
-    line-height: 1.5;
-  }
 
-  input {
-    font-weight: var(--font-weight-normal);
-    line-height: 1.5;
+/* ================================================================
+   SELECTION + FOCUS
+   ================================================================ */
+
+::selection {
+  background: rgba(242,242,242,0.18);
+  color: #ffffff;
+}
+
+*:focus-visible {
+  outline: 2px solid rgba(242,242,242,0.35) !important;
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+
+/* ================================================================
+   REDUCE MOTION
+   ================================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
   }
 }

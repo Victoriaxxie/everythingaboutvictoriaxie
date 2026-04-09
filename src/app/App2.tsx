@@ -4,6 +4,7 @@ import { AboutV2 } from "./components/v2/AboutV2";
 import { ExperienceV2 } from "./components/v2/ExperienceV2";
 import { ProjectsV2 } from "./components/v2/ProjectsV2";
 import { ContactV2 } from "./components/v2/ContactV2";
+import { FooterV2 } from "./components/v2/FooterV2";
 
 export default function App2() {
   return (
@@ -16,6 +17,7 @@ export default function App2() {
         <ExperienceV2 />
         <ProjectsV2 />
         <ContactV2 />
+        <FooterV2 />
       </main>
 
       <div

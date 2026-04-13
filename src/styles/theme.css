@@ -1168,7 +1168,43 @@ section#experience div[class*="border-t border-\[#61dafb\]\/10"] {
   border-top: 1px solid rgba(0,0,0,0.08) !important;
 }
 
-/* ── ACTIVITIES (Extracurriculars) ── */
+/* ── ACTIVITIES (Extracurriculars) — act-* classes ── */
+
+.act-item {
+  background: #ffffff;
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: var(--radius);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.act-item:hover {
+  border-color: rgba(0,0,0,0.22);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.07);
+}
+.act-role {
+  font-family: var(--font-display) !important;
+  font-size: 0.95rem !important;
+  font-weight: 600 !important;
+  color: #0a0a0a !important;
+}
+.act-org  { font-size: 0.82rem; color: #555555; margin-top: 2px; }
+.act-period { font-size: 0.75rem; color: #888888; }
+.act-chevron { width: 1rem; height: 1rem; color: #aaaaaa; transition: transform 0.2s ease; }
+.act-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  font-size: 0.7rem;
+  border: 1px solid rgba(0,0,0,0.15);
+  color: #666666;
+  border-radius: 4px;
+}
+.act-detail {
+  padding: 0 1.5rem 1.5rem;
+  border-top: 1px solid rgba(0,0,0,0.08);
+}
+.act-desc { color: #333333; }
+.act-bullet { color: #aaaaaa; }
+
+/* ── ACTIVITIES (Extracurriculars) — legacy selectors kept for fallback ── */
 
 section#activities div[class*="border border-["],
 section#activities div[class*="border-[#61dafb"] {

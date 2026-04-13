@@ -142,36 +142,36 @@ function ExperienceList({ items, startIndex = 0 }: { items: Experience[]; startI
             key={index}
             data-reveal
             data-delay={String((startIndex + index) * 0.07)}
-            className="border border-[#61dafb]/20 bg-[#050505] transition-colors hover:border-[#61dafb]/40"
+            className="act-item"
           >
             <button className="w-full p-6 text-left" onClick={() => setExpanded(isOpen ? null : index)}>
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1">
-                  <h3 className="text-white text-base">{exp.role}</h3>
-                  <div className="text-[#61dafb] text-sm mt-0.5">{exp.organization}</div>
+                  <h3 className="act-role">{exp.role}</h3>
+                  <div className="act-org">{exp.organization}</div>
                 </div>
                 <div className="flex items-center gap-3 shrink-0">
-                  <span className="text-white/40 text-xs">{exp.period}</span>
+                  <span className="act-period">{exp.period}</span>
                   <ChevronDown
-                    className="h-4 w-4 text-white/40 transition-transform duration-200"
+                    className="act-chevron"
                     style={{ transform: isOpen ? "rotate(180deg)" : "rotate(0deg)" }}
                   />
                 </div>
               </div>
               <div className="flex flex-wrap gap-2 mt-3">
                 {exp.tags.map((tag) => (
-                  <span key={tag} className="px-2 py-0.5 text-xs border border-[#61dafb]/30 text-[#61dafb]">
+                  <span key={tag} className="act-tag">
                     {tag}
                   </span>
                 ))}
               </div>
             </button>
             {isOpen && (
-              <div className="px-6 pb-6 border-t border-[#61dafb]/10">
+              <div className="act-detail">
                 <ul className="mt-4 space-y-2">
                   {exp.description.map((point, i) => (
-                    <li key={i} className="flex gap-2 text-sm text-white/60 leading-relaxed">
-                      <span className="text-[#61dafb] shrink-0">›</span>
+                    <li key={i} className="flex gap-2 text-sm leading-relaxed act-desc">
+                      <span className="act-bullet shrink-0">›</span>
                       <span>{point}</span>
                     </li>
                   ))}
@@ -256,7 +256,7 @@ export function ExperienceV2() {
       </section>
 
       {/* Extracurriculars — accordion style */}
-      <section id="activities" className="flex justify-center px-6 pt-8 pb-20">
+      <section id="extracurriculars" className="flex justify-center px-6 pt-8 pb-20">
         <div className="max-w-4xl w-full space-y-12">
           <div className="flex items-center gap-3">
             <span className="text-[#61dafb] text-xs font-mono tracking-widest">03.</span>

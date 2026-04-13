@@ -256,7 +256,7 @@ export function ExperienceV2() {
       </section>
 
       {/* Extracurriculars — accordion style */}
-      <section id="activities" className="min-h-screen flex items-center justify-center px-6 py-20">
+      <section id="activities" className="flex justify-center px-6 pt-8 pb-20">
         <div className="max-w-4xl w-full space-y-12">
           <div className="flex items-center gap-3">
             <span className="text-[#61dafb] text-xs font-mono tracking-widest">03.</span>

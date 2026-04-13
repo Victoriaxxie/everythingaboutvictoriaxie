@@ -134,6 +134,7 @@
 .text-white { color: #f2f2f2 !important; }
 
 
+
 /* ================================================================
    BACKGROUND GRID  — make the decorative grid invisible
    ================================================================ */
@@ -145,12 +146,26 @@
    HEADER
    ================================================================ */
 
-header {
-  background: rgba(8, 8, 8, 0.88) !important;
+/* Transparent on hero */
+header.header-transparent {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-bottom: 1px solid transparent !important;
+  box-shadow: none !important;
+}
+
+/* Opaque once scrolled */
+header.header-scrolled {
+  background: rgba(8, 8, 8, 0.9) !important;
   backdrop-filter: blur(24px) !important;
   -webkit-backdrop-filter: blur(24px) !important;
   border-bottom: 1px solid rgba(242, 242, 242, 0.06) !important;
   box-shadow: 0 1px 0 rgba(242,242,242,0.04) !important;
+}
+
+header {
+  transition: background 0.45s ease, border-color 0.45s ease, backdrop-filter 0.45s ease !important;
 }
 
 /* Logo */
@@ -180,7 +195,7 @@ header nav a:hover {
   background: rgba(242,242,242,0.07) !important;
 }
 
-/* Last link = "Get in touch" pill button (contact link) */
+/* Last link = "Get in touch" pill button */
 header nav a[href="#contact"] {
   color: #080808 !important;
   background: #f2f2f2 !important;
@@ -190,202 +205,390 @@ header nav a[href="#contact"] {
 header nav a[href="#contact"]:hover {
   background: #ffffff !important;
   color: #080808 !important;
+  transform: scale(1.03) !important;
 }
 
 
 /* ================================================================
-   HERO  —  full-viewport 60/40 split, big name left, photo right
+   HERO  —  full-bleed editorial layout
    ================================================================ */
 
-/* Section fills viewport, no padding (header is fixed overlay) */
-section:first-of-type {
-  padding: 0 !important;
+/* Section fills viewport */
+.hero {
+  position: relative;
+  width: 100%;
   min-height: 100vh;
+  overflow: hidden;
+  background: #080808;
 }
 
-/* Override the max-w-7xl wrapper to fill full width */
-section:first-of-type > div {
-  max-width: 100% !important;
-  width: 100% !important;
-  padding: 0 !important;
+/* Photo: absolute, fills entire section */
+.hero-photo-wrap {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
 }
 
-/* Grid: 58% text | 42% photo, full height */
-section:first-of-type .grid {
-  grid-template-columns: 58fr 42fr !important;
-  gap: 0 !important;
-  align-items: stretch !important;
-  min-height: 100vh !important;
-}
-
-/* Text column: LEFT */
-section:first-of-type .grid > div:first-child { order: 2; }
-section:first-of-type .grid > div:last-child  { order: 1; }
-
-/* Left column — vertically centred, generous padding */
-section:first-of-type .grid > div:last-child {
-  display: flex !important;
-  flex-direction: column !important;
-  justify-content: center !important;
-  padding: 8rem 5rem 5rem 6rem !important;
-  gap: 0 !important;
-}
-
-/* Hide the space-y-6 gap so we control spacing ourselves */
-section:first-of-type .space-y-6 {
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 0 !important;
-}
-
-/* ── NAME ────────────────────────────────── */
-
-/* Collapse the h1 to 0 so the "Hello, I'm" text node is invisible */
-section:first-of-type h1 {
-  font-size: 0 !important;
-  line-height: 1 !important;
-  margin: 0 0 1.5rem 0 !important;
-}
-
-/* "Hello, I'm" label — injected as ::before, text node stays hidden */
-section:first-of-type h1::before {
-  content: "Hello, I'm";
+.hero-photo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 55% 10%;
   display: block;
-  font-family: 'DM Sans', sans-serif !important;
-  font-size: 1rem;
+  /* Slight desaturation + contrast boost — preserves the moody tones */
+  filter: grayscale(0.25) contrast(1.15) brightness(0.9);
+}
+
+/* Left-side fade to page background — photo already dark on left so keep subtle */
+.hero-photo-fade-l {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, #080808 0%, rgba(8,8,8,0.55) 20%, rgba(8,8,8,0.1) 50%, transparent 75%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Bottom fade to page background */
+.hero-photo-fade-b {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, #080808 0%, rgba(8,8,8,0.65) 14%, transparent 38%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* General edge vignette */
+.hero-photo-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 38%, rgba(8,8,8,0.48) 100%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Foreground portrait — same image, masked to center-right so the
+   person appears to stand IN FRONT of the name letters */
+.hero-photo-fg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 55% 10%;
+  display: block;
+  filter: grayscale(0.25) contrast(1.15) brightness(0.9);
+  z-index: 8;   /* above .hero-name-wrap (z-index: 4) */
+  pointer-events: none;
+  user-select: none;
+  /* Fade out to the left — keep person visible, hide over the text area */
+  /* Person weaves from right deeper into the letters */
+  -webkit-mask-image: linear-gradient(
+    to left,
+    black 18%,
+    rgba(0,0,0,0.88) 35%,
+    rgba(0,0,0,0.55) 52%,
+    rgba(0,0,0,0.18) 66%,
+    transparent 82%
+  );
+  mask-image: linear-gradient(
+    to left,
+    black 18%,
+    rgba(0,0,0,0.88) 35%,
+    rgba(0,0,0,0.55) 52%,
+    rgba(0,0,0,0.18) 66%,
+    transparent 82%
+  );
+}
+
+/* Smooth mouse-parallax on right elements */
+.hero-tr,
+.hero-mr,
+.hero-scroll {
+  transition: transform 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: transform;
+}
+
+/* ── TOP-RIGHT: year + school ────────────── */
+
+.hero-tr {
+  position: absolute;
+  top: 7.5rem;
+  right: 3rem;
+  z-index: 10;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.15rem;
+}
+
+.hero-year {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 3vw, 2.8rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: #f2f2f2;
+}
+
+.hero-year-sub {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
   font-weight: 400;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
   color: rgba(242,242,242,0.38);
-  margin-bottom: 0.6rem;
 }
 
-/* Victoria Xie. — enormous */
-section:first-of-type h1 span {
-  display: block !important;
-  font-family: 'Syne', sans-serif !important;
-  font-size: clamp(4.5rem, 7.5vw, 8rem) !important;
+/* ── MID-RIGHT: role + pill + description ── */
+
+.hero-mr {
+  position: absolute;
+  top: 32%;
+  right: 3rem;
+  transform: translateY(-50%);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.9rem;
+  max-width: 240px;
+  text-align: right;
+}
+
+.hero-role {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(242,242,242,0.45);
+}
+
+.hero-pill {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: rgba(242,242,242,0.92);
+  border-bottom: 1px solid rgba(242,242,242,0.3);
+  padding-bottom: 0.2rem;
+}
+
+.hero-desc {
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  font-weight: 400;
+  line-height: 1.85;
+  color: rgba(242,242,242,0.5);
+  margin: 0;
+  font-style: italic;
+}
+
+/* ── BOTTOM-LEFT: "Hello, I'm" + massive name ── */
+
+.hero-name-wrap {
+  position: absolute;
+  bottom: 3.5rem;
+  left: 3rem;
+  z-index: 4;  /* below .hero-photo-fg (8) so person overlaps the letters */
+  /* Fade the left edge of the letters into the dark background — "VIC" + "XIE" dissolve in */
+  -webkit-mask-image: linear-gradient(
+    to right,
+    rgba(0,0,0,0.18) 0%,
+    rgba(0,0,0,0.55) 18%,
+    rgba(0,0,0,0.82) 32%,
+    black 48%
+  );
+  mask-image: linear-gradient(
+    to right,
+    rgba(0,0,0,0.18) 0%,
+    rgba(0,0,0,0.55) 18%,
+    rgba(0,0,0,0.82) 32%,
+    black 48%
+  );
+}
+
+.hero-greeting {
+  font-family: var(--font-mono);
+  font-size: clamp(1rem, 1.4vw, 1.4rem);
+  font-weight: 400;
+  letter-spacing: 0.03em;
+  color: rgba(242,242,242,0.55);
+  margin: 0 0 0.5rem 0;
+  line-height: 1;
+}
+
+.hero-name {
+  font-family: var(--font-display) !important;
+  font-size: clamp(5rem, 12.5vw, 13.5rem) !important;
   font-weight: 800 !important;
-  line-height: 0.95 !important;
-  letter-spacing: -0.04em !important;
+  line-height: 0.88 !important;
+  letter-spacing: -0.05em !important;
   color: #f2f2f2 !important;
-  background: none !important;
-  -webkit-text-fill-color: #f2f2f2 !important;
-}
-
-/* ── IDE BOX — hidden ───────────────────── */
-section:first-of-type div[class*="border border-["] {
-  display: none !important;
-}
-
-/* ── SUBTITLE ───────────────────────────── */
-section:first-of-type p {
-  color: rgba(242,242,242,0.65) !important;
-  font-size: 0.95rem !important;
-  line-height: 1.75 !important;
-  max-width: 420px !important;
   margin: 0 !important;
 }
 
-/* ── PHOTO COLUMN ────────────────────────── */
-
-/* Right column — stretches full viewport height */
-section:first-of-type .grid > div:first-child {
-  position: relative !important;
-  overflow: hidden !important;
-  min-height: 100vh !important;
-}
-
-/* Photo wrapper fills column */
-section:first-of-type div[class*="relative overflow-hidden"] {
-  border-radius: 0 !important;
-  overflow: hidden !important;
-  box-shadow: none !important;
-  height: 100% !important;
-  min-height: 100vh !important;
-  position: absolute !important;
-  inset: 0 !important;
-}
-
-/* Photo itself — higher contrast to push grey bg darker */
-img[alt="Victoria Xie"] {
-  filter: grayscale(1) contrast(1.6) brightness(0.68) !important;
-  transition: filter 0.6s ease !important;
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover !important;
-  object-position: center top !important;
+/* First name — light, italic, humanistic */
+.hero-name-first {
   display: block !important;
-}
-img[alt="Victoria Xie"]:hover {
-  filter: grayscale(0.5) contrast(1.3) brightness(0.8) !important;
+  font-family: 'DM Sans', sans-serif !important;
+  font-size: clamp(4rem, 9.5vw, 11rem) !important;
+  font-weight: 300 !important;
+  font-style: italic !important;
+  line-height: 0.95 !important;
+  letter-spacing: -0.02em !important;
+  color: rgba(242,242,242,0.72) !important;
+  background: none !important;
+  -webkit-text-fill-color: rgba(242,242,242,0.72) !important;
 }
 
-/* Gradient overlay — fades grey studio bg into page bg from all edges.
-   Left edge fade is strongest so it blends into the text column. */
-section:first-of-type .grid > div:first-child::after {
-  content: '';
+/* Last name — heavy, uppercase, bold */
+.hero-name-last {
+  display: block !important;
+  font-family: 'Syne', sans-serif !important;
+  font-size: clamp(4.5rem, 11vw, 13rem) !important;
+  font-weight: 800 !important;
+  font-style: normal !important;
+  line-height: 0.88 !important;
+  letter-spacing: -0.05em !important;
+  color: #f2f2f2 !important;
+  background: none !important;
+  -webkit-text-fill-color: #f2f2f2 !important;
+  text-transform: uppercase !important;
+}
+
+/* ── BOTTOM-RIGHT: scroll indicator ─────── */
+
+.hero-scroll {
+  position: absolute;
+  bottom: 3.5rem;
+  right: 3rem;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+}
+
+.hero-scroll-sub {
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+  font-weight: 400;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(242,242,242,0.25);
+}
+
+.hero-scroll-cta {
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(242,242,242,0.52);
+  transition: color 0.18s ease;
+}
+
+.hero-scroll-cta:hover {
+  color: #f2f2f2;
+}
+
+/* Bouncing down arrow */
+.hero-scroll-arrow {
+  display: block;
+  font-size: 0.75rem;
+  color: rgba(242,242,242,0.35);
+  animation: hero-bounce 1.8s ease-in-out infinite;
+  margin-top: 0.1rem;
+}
+
+@keyframes hero-bounce {
+  0%, 100% { transform: translateY(0); opacity: 0.35; }
+  50%       { transform: translateY(5px); opacity: 0.7; }
+}
+
+/* Blinking cursor after "Hello, I'm" */
+.hero-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 0.9em;
+  background: rgba(242,242,242,0.55);
+  margin-left: 4px;
+  vertical-align: text-bottom;
+  animation: hero-blink 1.1s step-start infinite;
+}
+
+@keyframes hero-blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+/* Cursor spotlight — radial highlight that follows mouse over photo */
+.hero-spotlight {
   position: absolute;
   inset: 0;
-  z-index: 10;
+  z-index: 2;
   pointer-events: none;
-  background:
-    linear-gradient(to right,  #080808 0%, rgba(8,8,8,0.85) 12%, rgba(8,8,8,0.2) 35%, transparent 60%),
-    linear-gradient(to bottom, #080808 0%, rgba(8,8,8,0.6) 10%, transparent 28%),
-    linear-gradient(to top,    #080808 0%, rgba(8,8,8,0.5) 8%,  transparent 25%),
-    radial-gradient(ellipse at 60% 40%, transparent 40%, rgba(8,8,8,0.55) 100%);
+  background: radial-gradient(
+    circle 340px at var(--spot-x, 60%) var(--spot-y, 40%),
+    rgba(255,255,255,0.055) 0%,
+    transparent 70%
+  );
+  transition: background 0.12s ease;
 }
 
-/* IDE / code box */
-section:first-of-type div[class*="border border-["] {
-  border-radius: var(--radius) !important;
-  border: 1px solid rgba(242,242,242,0.09) !important;
-  background: #0f0f0f !important;
-  overflow: hidden;
+/* Scramble text — monospace so letters don't jitter in width */
+.hero-name-first {
+  font-variant-numeric: tabular-nums;
+  min-width: 0;
 }
 
-/* IDE tab bar */
-div[class*="border-b border-[#61dafb"] {
-  background: #111 !important;
-  border-bottom: 1px solid rgba(242,242,242,0.07) !important;
-  border-radius: var(--radius) var(--radius) 0 0 !important;
-}
-/* Active tab indicator */
-div[class*="border-b-2 border-\[#61dafb\]"] {
-  border-bottom: 2px solid rgba(242,242,242,0.55) !important;
-}
-div[class*="bg-\[#61dafb\]\/10"] {
-  background: rgba(242,242,242,0.05) !important;
-}
-div[class*="w-2 h-2 rounded-full bg-\[#61dafb\]"] {
-  background: rgba(242,242,242,0.4) !important;
-}
-span[class*="text-xs text-\[#61dafb\]"] {
-  color: rgba(242,242,242,0.5) !important;
+
+
+/* ================================================================
+   ABOUT — fun facts strip
+   ================================================================ */
+
+.about-facts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.55rem 1.5rem;
+  border-top: 1px solid rgba(0,0,0,0.1);
+  padding-top: 1.2rem;
+  margin-top: 0.5rem;
 }
 
-/* IDE code area */
-div[class*="p-6 min-h-"] {
-  background: #090909 !important;
+.about-fact {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
 }
 
-/* Blinking cursor */
-span[class*="w-2 h-4 bg-\[#61dafb\]"] {
-  background: #f2f2f2 !important;
-  opacity: 0.8;
+.about-fact-label {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 0.6rem !important;
+  letter-spacing: 0.14em !important;
+  text-transform: uppercase !important;
+  color: #888888 !important;
+  white-space: nowrap !important;
 }
 
-/* IDE status bar */
-div[class*="border-t border-[#61dafb"][class*="px-4 py-1"] {
-  background: #0f0f0f !important;
-  border-top: 1px solid rgba(242,242,242,0.07) !important;
-  border-radius: 0 0 var(--radius) var(--radius) !important;
-  color: rgba(242,242,242,0.28) !important;
+.about-fact-label::after {
+  content: "·";
+  margin-left: 0.4rem;
 }
-div[class*="w-1.5 h-1.5 rounded-full bg-\[#61dafb\]"] {
-  background: rgba(242,242,242,0.5) !important;
+
+.about-fact-value {
+  font-family: var(--font-mono) !important;
+  font-size: 0.78rem !important;
+  color: #111111 !important;
+  font-weight: 400 !important;
 }
-span[class*="text-\[#61dafb\]"] {
-  color: rgba(242,242,242,0.4) !important;
+
+.about-facts .about-fact:nth-child(3) .about-fact-value {
+  color: #2563eb !important;
 }
 
 
@@ -394,11 +597,11 @@ span[class*="text-\[#61dafb\]"] {
    ================================================================ */
 
 /* Section header row + all ancestors — force descenders to show */
-section#about, section#experience, section#projects, section#contact {
+section#about, section#experience, section#activities, section#contact {
   overflow: visible !important;
 }
 section#about > div, section#experience > div,
-section#projects > div, section#contact > div {
+section#activities > div, section#contact > div {
   overflow: visible !important;
 }
 section > div > div[class*="flex items-center gap-3"] {
@@ -407,14 +610,14 @@ section > div > div[class*="flex items-center gap-3"] {
   padding-bottom: 0 !important;
 }
 
-/* Section number: "01." → small uppercase muted label */
+/* Section number: "01." — muted on dark bg */
 section > div > div > span[class*="text-[#61dafb]"]:first-child,
 section > div > span[class*="text-[#61dafb]"]:first-child {
   font-family: var(--font-display) !important;
   font-size: 0.65rem !important;
   font-weight: 600 !important;
   letter-spacing: 0.16em !important;
-  color: rgba(242,242,242,0.25) !important;
+  color: rgba(242,242,242,0.3) !important;
   text-transform: uppercase !important;
 }
 
@@ -459,7 +662,7 @@ span[class*="text-\[#67e8f9\]"] {
 
 /* Award block */
 div[class*="border-l-2 border-\[#61dafb"] {
-  border-left: 2px solid rgba(242,242,242,0.14) !important;
+  border-left: 2px solid rgba(242,242,242,0.15) !important;
   padding-left: 1.1rem !important;
   transition: border-color 0.2s ease !important;
 }
@@ -503,25 +706,25 @@ section#about .about-filter-button:hover {
 }
 
 section#about .about-filter-button[style*="97,218,251,0.08"] {
-  background: rgba(242,242,242,0.12) !important;
-  border-color: rgba(242,242,242,0.2) !important;
-  color: #f2f2f2 !important;
+  background: rgba(97,218,251,0.1) !important;
+  border-color: rgba(97,218,251,0.4) !important;
+  color: #67e8f9 !important;
 }
 
-/* Skill bar fill — white instead of cyan */
+/* Skill bar fill — solid */
 div[class*="cursor-default"] > div[class*="h-px"] > div {
-  background: rgba(242,242,242,0.75) !important;
+  background: rgba(242,242,242,0.65) !important;
   box-shadow: none !important;
 }
 
-/* Skill bar track — subtle bg */
+/* Skill bar track */
 div[class*="cursor-default"] > div[class*="h-px"] {
   background: rgba(242,242,242,0.08) !important;
 }
 
-/* Hover label — grey instead of cyan (overrides React inline style) */
+/* Hover label */
 div[class*="cursor-default"]:hover span[class*="transition-opacity"] {
-  color: rgba(242,242,242,0.7) !important;
+  color: #67e8f9 !important;
 }
 
 /* "Hover a skill" hint */
@@ -557,9 +760,9 @@ section#experience .experience-filter-button:hover {
 }
 
 section#experience .experience-filter-button[style*="97,218,251,0.08"] {
-  background: rgba(242,242,242,0.12) !important;
-  border-color: rgba(242,242,242,0.2) !important;
-  color: #f2f2f2 !important;
+  background: rgba(97,218,251,0.1) !important;
+  border-color: rgba(97,218,251,0.4) !important;
+  color: #67e8f9 !important;
 }
 
 section#experience div[class*="border border-["],
@@ -573,10 +776,10 @@ section#experience div[class*="border-[#61dafb"] {
 }
 section#experience div[class*="border border-["]:hover,
 section#experience div[class*="border-[#61dafb"]:hover {
-  border-color: rgba(242,242,242,0.18) !important;
-  background: rgba(242,242,242,0.04) !important;
+  border-color: rgba(97,218,251,0.25) !important;
+  background: rgba(97,218,251,0.03) !important;
   transform: translateX(5px) !important;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.5) !important;
+  box-shadow: 0 8px 40px rgba(97,218,251,0.07), 0 8px 32px rgba(0,0,0,0.5) !important;
 }
 
 section#experience div[class*="border border-["] > button,
@@ -635,8 +838,8 @@ section#experience div[class*="border-t border-\[#61dafb\]\/10"] {
    PROJECTS / HIGHLIGHTS  —  accordion cards
    ================================================================ */
 
-section#projects div[class*="border border-["],
-section#projects div[class*="border-[#61dafb"] {
+section#activities div[class*="border border-["],
+section#activities div[class*="border-[#61dafb"] {
   background: #0e0e0e !important;
   border: 1px solid rgba(242,242,242,0.07) !important;
   border-radius: var(--radius) !important;
@@ -644,23 +847,23 @@ section#projects div[class*="border-[#61dafb"] {
   animation: none !important;
   overflow: hidden !important;
 }
-section#projects div[class*="border border-["]:hover,
-section#projects div[class*="border-[#61dafb"]:hover {
-  border-color: rgba(242,242,242,0.18) !important;
-  background: rgba(242,242,242,0.04) !important;
+section#activities div[class*="border border-["]:hover,
+section#activities div[class*="border-[#61dafb"]:hover {
+  border-color: rgba(97,218,251,0.25) !important;
+  background: rgba(97,218,251,0.03) !important;
   transform: translateY(-4px) !important;
-  box-shadow: 0 16px 48px rgba(0,0,0,0.55) !important;
+  box-shadow: 0 16px 48px rgba(97,218,251,0.08), 0 16px 48px rgba(0,0,0,0.55) !important;
 }
 
-section#projects div[class*="border border-["] > button,
-section#projects div[class*="border-[#61dafb"] > button {
+section#activities div[class*="border border-["] > button,
+section#activities div[class*="border-[#61dafb"] > button {
   display: block !important;
   border-radius: inherit !important;
   background: transparent !important;
 }
 
-section#projects div[class*="border border-["] > button:hover,
-section#projects div[class*="border-[#61dafb"] > button:hover {
+section#activities div[class*="border border-["] > button:hover,
+section#activities div[class*="border-[#61dafb"] > button:hover {
   background: transparent !important;
 }
 
@@ -687,23 +890,354 @@ span[class*="px-2 py-0.5 text-xs border"][style] {
 }
 
 /* Tech tags */
-section#projects span[class*="text-xs text-white\/40"] {
+section#activities span[class*="text-xs text-white\/40"] {
   color: rgba(242,242,242,0.3) !important;
   font-size: 0.74rem !important;
 }
 
 /* Expanded bullet marker */
-section#projects li > span[style] {
+section#activities li > span[style] {
   color: rgba(242,242,242,0.25) !important;
 }
-section#projects li > span[class*="text-white\/60"] {
+section#activities li > span[class*="text-white\/60"] {
   color: rgba(242,242,242,0.7) !important;
   font-size: 0.87rem !important;
 }
 
 /* Expanded divider */
-section#projects div[class*="border-t border-\[#61dafb\]\/10"] {
+section#activities div[class*="border-t border-\[#61dafb\]\/10"] {
   border-top: 1px solid rgba(242,242,242,0.06) !important;
+}
+
+
+/* ================================================================
+   LIGHT SECTIONS  —  About, Experience, Projects
+   White background, dark text
+   ================================================================ */
+
+section#about,
+section#experience,
+section#activities {
+  background: #f5f5f5 !important;
+}
+
+/* Headings */
+section#about h2,
+section#experience h2,
+section#activities h2 {
+  color: #0a0a0a !important;
+}
+
+section#about h3,
+section#experience h3:not(.exp-title),
+section#activities h3 {
+  color: #0a0a0a !important;
+  font-size: 0.95rem !important;
+}
+
+/* Section numbers — grey on light bg */
+section#about > div > div > span[class*="text-[#61dafb]"]:first-child,
+section#experience > div > div > span[class*="text-[#61dafb]"]:first-child,
+section#activities > div > div > span[class*="text-[#61dafb]"]:first-child {
+  color: #999999 !important;
+}
+
+/* Divider lines */
+section#about div[class*="flex-1 h-px"],
+section#about div[class*="h-px bg-[#61dafb"],
+section#experience div[class*="flex-1 h-px"],
+section#experience div[class*="h-px bg-[#61dafb"],
+section#activities div[class*="flex-1 h-px"],
+section#activities div[class*="h-px bg-[#61dafb"] {
+  background: rgba(0,0,0,0.1) !important;
+}
+
+/* ── ABOUT ── */
+
+section#about p,
+section#about div[class*="space-y-6"] > p {
+  color: #444444 !important;
+  font-size: 0.92rem !important;
+}
+
+section#about span[class*="text-[#67e8f9]"],
+section#about span[class*="text-\[#67e8f9\]"] {
+  color: #111111 !important;
+  font-weight: 600 !important;
+}
+
+section#about div[class*="border-l-2 border-\[#61dafb"] {
+  border-left: 2px solid rgba(0,0,0,0.15) !important;
+}
+section#about div[class*="border-l-2 border-\[#61dafb"]:hover {
+  border-left-color: rgba(0,0,0,0.4) !important;
+}
+section#about div[class*="border-l-2"] div[class*="text-\[#67e8f9\]"] {
+  color: #111111 !important;
+}
+section#about div[class*="border-l-2"] div[class*="text-white\/50"] {
+  color: #777777 !important;
+}
+
+section#about .about-filter-button {
+  border: 1px solid rgba(0,0,0,0.12) !important;
+  background: #ffffff !important;
+  color: #555555 !important;
+}
+section#about .about-filter-button:hover {
+  background: rgba(0,0,0,0.05) !important;
+  border-color: rgba(0,0,0,0.25) !important;
+  color: #111111 !important;
+}
+section#about .about-filter-button[style*="97,218,251,0.08"] {
+  background: rgba(0,0,0,0.08) !important;
+  border-color: rgba(0,0,0,0.3) !important;
+  color: #111111 !important;
+}
+
+/* Skill bars on light bg */
+section#about div[class*="cursor-default"] > div[class*="h-px"] {
+  background: rgba(0,0,0,0.1) !important;
+}
+section#about div[class*="cursor-default"] > div[class*="h-px"] > div {
+  background: #222222 !important;
+}
+/* Skill name — first span in the label row */
+section#about div[class*="cursor-default"] > div:first-child > span:first-child,
+section#about div[class*="cursor-default"] span[class*="text-white"] {
+  color: #333333 !important;
+}
+/* Proficiency label on hover */
+section#about div[class*="cursor-default"]:hover > div:first-child > span:last-child {
+  color: #555555 !important;
+}
+section#about p[class*="text-white\/30"] {
+  color: rgba(0,0,0,0.28) !important;
+}
+
+/* ── EXPERIENCE — editorial list ── */
+
+.exp-editorial { width: 100%; }
+
+/* Thin rule */
+.exp-rule {
+  height: 1px;
+  background: rgba(0,0,0,0.1);
+  width: 100%;
+}
+
+.exp-item { width: 100%; }
+
+/* Row: flex — title takes up all remaining space, right cols fixed */
+.exp-row {
+  display: flex !important;
+  align-items: center !important;
+  width: 100% !important;
+  padding: 0.4rem 0 !important;
+  cursor: pointer !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+  transition: background 0s !important;
+}
+.exp-row:hover  { background: transparent !important; }
+.exp-row:active { transform: none !important; }
+
+/* Title — scoped to section#experience so specificity beats h3 rule */
+section#experience .exp-title {
+  flex: 1;
+  font-family: 'Bebas Neue', var(--font-display) !important;
+  font-size: clamp(1.6rem, 3vw, 3.2rem) !important;
+  font-weight: 400 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.03em !important;
+  line-height: 1 !important;
+  color: #CECECE !important;
+  transition: color 0.3s ease !important;
+  text-align: left;
+}
+
+section#experience .exp-row:hover .exp-title {
+  color: #111111 !important;
+}
+
+/* Company — its own column, fixed width */
+.exp-company {
+  width: 220px;
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: #555555;
+  text-align: left;
+}
+
+/* Period — its own column, fixed width, right-aligned */
+.exp-period {
+  width: 130px;
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: #888888;
+  text-align: right;
+}
+
+/* Expanded detail */
+.exp-detail {
+  padding: 0.6rem 0 1.1rem;
+  animation: fadeInDetail 0.22s ease both;
+}
+@keyframes fadeInDetail {
+  from { opacity: 0; transform: translateY(-5px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.exp-detail-inner { max-width: 580px; }
+.exp-detail-list  {
+  display: flex;
+  flex-direction: column;
+  gap: 0.32rem;
+  margin-bottom: 0.75rem;
+}
+.exp-detail-item {
+  display: flex;
+  gap: 0.55rem;
+  font-size: 0.83rem;
+  color: #444444;
+  line-height: 1.6;
+}
+.exp-detail-bullet { color: #cccccc; flex-shrink: 0; }
+.exp-detail-tags   { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.exp-tag {
+  font-size: 0.6rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  border: 1px solid rgba(0,0,0,0.13);
+  padding: 0.18rem 0.6rem;
+  color: #777777;
+  border-radius: 2px;
+}
+
+/* ── EXPERIENCE — filter (legacy, unused but kept safe) ── */
+
+section#experience .experience-filter-button {
+  border: 1px solid rgba(0,0,0,0.12) !important;
+  background: #ffffff !important;
+  color: #555555 !important;
+}
+section#experience .experience-filter-button:hover {
+  background: rgba(0,0,0,0.05) !important;
+  border-color: rgba(0,0,0,0.25) !important;
+  color: #111111 !important;
+}
+section#experience .experience-filter-button[style*="97,218,251,0.08"] {
+  background: rgba(0,0,0,0.08) !important;
+  border-color: rgba(0,0,0,0.3) !important;
+  color: #111111 !important;
+}
+
+section#experience div[class*="border border-["],
+section#experience div[class*="border-[#61dafb"] {
+  background: #ffffff !important;
+  border: 1px solid rgba(0,0,0,0.1) !important;
+}
+section#experience div[class*="border border-["]:hover,
+section#experience div[class*="border-[#61dafb"]:hover {
+  border-color: rgba(0,0,0,0.25) !important;
+  background: #fafafa !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.08) !important;
+}
+
+section#experience div[class*="text-\[#61dafb\] text-sm"] {
+  color: #555555 !important;
+}
+section#experience span[class*="text-white\/40"] {
+  color: #888888 !important;
+}
+section#experience span[class*="text-xs border border-\[#61dafb"] {
+  border: 1px solid rgba(0,0,0,0.15) !important;
+  color: #666666 !important;
+  background: transparent !important;
+}
+
+/* Expanded description — target the li directly */
+section#experience li {
+  color: #333333 !important;
+}
+section#experience li > span[class*="text-\[#61dafb\]"] {
+  color: #999999 !important;
+}
+section#experience div[class*="border-t border-\[#61dafb\]\/10"] {
+  border-top: 1px solid rgba(0,0,0,0.08) !important;
+}
+
+/* ── ACTIVITIES (Extracurriculars) ── */
+
+section#activities div[class*="border border-["],
+section#activities div[class*="border-[#61dafb"] {
+  background: #ffffff !important;
+  border: 1px solid rgba(0,0,0,0.1) !important;
+}
+section#activities div[class*="border border-["]:hover,
+section#activities div[class*="border-[#61dafb"]:hover {
+  border-color: rgba(0,0,0,0.25) !important;
+  background: #fafafa !important;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.08) !important;
+}
+
+section#activities div[class*="mt-0.5 p-2 border shrink-0"] {
+  border: 1px solid rgba(0,0,0,0.12) !important;
+  background: rgba(0,0,0,0.03) !important;
+  color: #555555 !important;
+}
+section#activities div[class*="mt-0.5 p-2 border shrink-0"]:hover {
+  background: rgba(0,0,0,0.06) !important;
+}
+
+/* Status badge — override inline color style */
+section#activities span[class*="px-2 py-0.5 text-xs border"] {
+  border: 1px solid rgba(0,0,0,0.15) !important;
+  color: #666666 !important;
+  background: transparent !important;
+}
+section#activities span[class*="text-xs text-white\/40"] {
+  color: #888888 !important;
+}
+
+/* Expanded description — target the li directly */
+section#activities li {
+  color: #333333 !important;
+}
+/* Bullet marker (inline style override) */
+section#activities li > span[style] {
+  color: #aaaaaa !important;
+}
+section#activities div[class*="border-t border-\[#61dafb\]\/10"] {
+  border-top: 1px solid rgba(0,0,0,0.08) !important;
+}
+
+/* Organisation name (cyan on dark → grey on light) */
+section#activities div[class*="text-\[#61dafb\] text-sm"] {
+  color: #555555 !important;
+}
+/* Chevron + period */
+section#activities span[class*="text-white\/40"] {
+  color: #888888 !important;
+}
+/* Tags: border + text */
+section#activities span[class*="border-\[#61dafb\]"] {
+  border-color: rgba(0,0,0,0.15) !important;
+  color: #555555 !important;
+}
+/* Bullet › markers */
+section#activities li > span[class*="text-\[#61dafb\]"] {
+  color: #aaaaaa !important;
+}
+/* Catch-all: any remaining cyan text in both light sections */
+section#experience *[class*="text-\[#61dafb\]"],
+section#activities *[class*="text-\[#61dafb\]"] {
+  color: #555555 !important;
+}
+section#experience *[class*="border-\[#61dafb\]"],
+section#activities *[class*="border-\[#61dafb\]"] {
+  border-color: rgba(0,0,0,0.15) !important;
 }
 
 
@@ -733,12 +1267,12 @@ section#contact div[class*="border-l-2"] p:last-child {
 
 /* Terminal prompt line */
 div[class*="flex items-center gap-2 text-\[#61dafb\]"] {
-  color: rgba(242,242,242,0.22) !important;
+  color: rgba(242,242,242,0.3) !important;
   font-family: 'JetBrains Mono', monospace !important;
   font-size: 0.78rem !important;
 }
 div[class*="flex items-center gap-2"] span[class*="text-white\/40"] {
-  color: rgba(242,242,242,0.18) !important;
+  color: rgba(242,242,242,0.3) !important;
 }
 
 /* Contact link cards */
@@ -751,7 +1285,7 @@ div[class*="border"][class*="p-4"] {
   animation: none !important;
 }
 a[class*="border"][class*="p-4"]:hover {
-  border-color: rgba(242,242,242,0.2) !important;
+  border-color: rgba(242,242,242,0.22) !important;
   background: rgba(242,242,242,0.04) !important;
   transform: translateX(6px) !important;
   box-shadow: 0 8px 32px rgba(0,0,0,0.4) !important;
@@ -784,60 +1318,145 @@ div[class*="border-t border-[#61dafb"][class*="pt-12"] {
   box-shadow: none !important;
 }
 div[class*="text-white\/40"] { color: rgba(242,242,242,0.22) !important; }
-div[class*="h-1 w-1 bg-\[#61dafb\]"] { background: rgba(242,242,242,0.35) !important; }
+div[class*="h-1 w-1 bg-\[#61dafb\]"] { background: rgba(242,242,242,0.4) !important; }
 
 
 /* ================================================================
-   FOOTER
+   FOOTER  —  combined contact + full-bleed oversized name
    ================================================================ */
 
 .site-footer {
+  position: relative;
+  overflow: hidden; /* clips horizontal bleed of bgname */
   background: #080808 !important;
+  display: flex;
+  flex-direction: column;
 }
 
-.site-footer-panel {
-  min-height: 440px;
-  overflow: hidden !important;
-  box-shadow: inset 0 1px 0 rgba(242,242,242,0.04) !important;
+/* Combined body block */
+.site-footer-body {
+  position: relative;
+  overflow: hidden;
+  padding: 6rem 4rem 5rem;
+  min-height: 560px;
 }
 
-.site-footer-marquee {
-  position: absolute;
-  left: 50%;
-  bottom: -0.24em;
-  transform: translateX(-50%);
+.site-footer-section-num {
   font-family: var(--font-display) !important;
-  font-size: clamp(7.5rem, 17vw, 17rem);
-  font-weight: 800;
-  line-height: 0.78;
-  letter-spacing: -0.065em;
-  white-space: nowrap;
+  font-size: 0.65rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.16em !important;
+  color: rgba(242,242,242,0.25) !important;
+  text-transform: uppercase !important;
+}
+
+.site-footer-section-title {
+  font-size: clamp(2rem, 3.5vw, 3rem) !important;
+  line-height: 1.2 !important;
+  color: #f2f2f2 !important;
+}
+
+/* Grid sits above bgname */
+.site-footer-body > .grid {
+  position: relative;
+  z-index: 1;
+}
+
+/* Left CTA column */
+.site-footer-cta-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.site-footer-eyebrow {
+  font-family: var(--font-mono) !important;
+  font-size: 0.7rem !important;
+  font-weight: 400 !important;
+  letter-spacing: 0.2em !important;
+  text-transform: uppercase !important;
+  color: rgba(242,242,242,0.28) !important;
+  margin: 0 0 1rem 0 !important;
+}
+
+.site-footer-heading {
+  font-family: var(--font-display) !important;
+  font-size: clamp(3rem, 5.5vw, 5rem) !important;
+  font-weight: 800 !important;
+  line-height: 1.02 !important;
+  letter-spacing: -0.04em !important;
+  color: #f2f2f2 !important;
+  margin: 0 0 1.4rem 0 !important;
+}
+
+.site-footer-sub {
+  font-size: 0.88rem !important;
+  line-height: 1.8 !important;
+  color: rgba(242,242,242,0.45) !important;
+  margin: 0 0 2rem 0 !important;
+}
+
+.site-footer-email-pill {
+  display: inline-block;
+  border: 1px solid rgba(242,242,242,0.2);
+  border-radius: 999px;
+  padding: 0.65rem 1.75rem;
+  font-size: 0.82rem;
+  letter-spacing: 0.01em;
+  color: rgba(242,242,242,0.7);
+  transition: border-color 0.18s ease, color 0.18s ease, background 0.18s ease;
+}
+
+.site-footer-email-pill:hover {
+  border-color: rgba(242,242,242,0.5);
   color: #f2f2f2;
-  z-index: 0;
+  background: rgba(242,242,242,0.04);
 }
 
-.site-footer-content {
-  min-height: 440px;
-}
-
-.site-footer-note {
-  max-width: 32rem;
-}
-
-.site-footer-bar {
+/* Oversized background name — absolute behind contact content */
+.site-footer-bgname {
   position: absolute;
+  bottom: -0.06em;
   left: 0;
   right: 0;
-  bottom: 0;
-  padding: 1.4rem 3rem 2rem;
+  font-family: var(--font-display) !important;
+  font-size: clamp(3rem, 12vw, 12rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.05em;
+  white-space: nowrap;
+  overflow: hidden;
+  color: rgba(242,242,242,0.07);
+  z-index: 0;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Bottom bar — in normal flow, sits at the very bottom after the name */
+.site-footer-bar {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.3rem 4rem 2rem;
   border-top: 1px solid rgba(242,242,242,0.08);
-  background: rgba(5,5,5,0.96) !important;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: #080808 !important;
+  font-size: 0.82rem;
+  color: rgba(242,242,242,0.5);
+  margin-top: 0;
+}
+
+@media (min-width: 768px) {
+  .site-footer-bar {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
 }
 
 .site-footer-link {
-  color: rgba(242,242,242,0.62) !important;
+  color: rgba(242,242,242,0.55) !important;
   transition: color 0.18s ease !important;
 }
 
@@ -845,21 +1464,48 @@ div[class*="h-1 w-1 bg-\[#61dafb\]"] { background: rgba(242,242,242,0.35) !impor
   color: #f2f2f2 !important;
 }
 
+/* ── Hero responsive ── */
+@media (max-width: 640px) {
+  /* Hide the mid-right panel — too cramped on mobile */
+  .hero-mr { display: none; }
+
+  /* Year sits tighter to top-right */
+  .hero-tr { top: 6rem; right: 1.5rem; }
+
+  /* Name anchored closer to edges */
+  .hero-name-wrap { left: 1.5rem; bottom: 2.5rem; }
+  .hero-scroll { right: 1.5rem; bottom: 2.5rem; }
+
+  /* Scale name down so it doesn't swamp the layout */
+  .hero-name {
+    font-size: clamp(3.2rem, 16vw, 5rem) !important;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .hero-mr { right: 2rem; max-width: 200px; }
+  .hero-tr { right: 2rem; }
+  .hero-name { font-size: clamp(4rem, 11vw, 9rem) !important; }
+}
+
 @media (max-width: 768px) {
-  .site-footer-panel,
-  .site-footer-content {
-    min-height: 340px;
+  .site-footer-body {
+    padding: 4rem 1.5rem 3rem;
   }
 
-  .site-footer-marquee {
-    left: 50%;
-    bottom: -0.18em;
-    transform: translateX(-50%);
-    font-size: clamp(5.2rem, 24vw, 8.5rem);
+  .site-footer-body {
+    min-height: 420px;
+    padding: 4rem 1.5rem 4rem;
+  }
+
+  .site-footer-bgname {
+    font-size: clamp(2rem, 13vw, 6rem);
+    bottom: -0.05em;
+    left: 0;
   }
 
   .site-footer-bar {
-    padding: 1.2rem 1.5rem 1.4rem;
+    padding: 1.2rem 1.5rem 1.6rem;
   }
 }
 
@@ -881,12 +1527,19 @@ button:active { transform: scale(0.97) !important; }
    ================================================================ */
 
 ::selection {
-  background: rgba(242,242,242,0.18);
+  background: rgba(242,242,242,0.2);
   color: #ffffff;
 }
 
+section#about *::selection,
+section#experience *::selection,
+section#activities *::selection {
+  background: rgba(0,0,0,0.1);
+  color: #0a0a0a;
+}
+
 *:focus-visible {
-  outline: 2px solid rgba(242,242,242,0.35) !important;
+  outline: 2px solid rgba(242,242,242,0.4) !important;
   outline-offset: 3px;
   border-radius: 6px;
 }
@@ -901,4 +1554,121 @@ button:active { transform: scale(0.97) !important; }
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* ================================================================
+   ANIMATIONS & SCROLL REVEAL
+   ================================================================ */
+
+/* --- Keyframes --- */
+
+@keyframes heroSlideUp {
+  from { opacity: 0; transform: translateY(36px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes heroPhotoIn {
+  from { opacity: 0; transform: scale(1.05); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes subtlePulse {
+  0%, 100% { opacity: 0.07; }
+  50%       { opacity: 0.11; }
+}
+
+/* --- Hero entrance (CSS-only, plays on load) --- */
+
+.hero-name-wrap {
+  animation: heroSlideUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
+}
+.hero-mr {
+  animation: heroSlideUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.25s both;
+}
+.hero-tr {
+  animation: heroSlideUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+}
+.hero-scroll {
+  animation: heroSlideUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both;
+}
+.hero-photo-wrap {
+  animation: heroPhotoIn 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0s both;
+}
+
+/* --- Scroll reveal --- */
+
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(26px);
+  transition:
+    opacity  0.7s cubic-bezier(0.16, 1, 0.3, 1) var(--reveal-delay, 0s),
+    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1) var(--reveal-delay, 0s);
+}
+
+[data-reveal].is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* --- Footer bgname breathe --- */
+
+.site-footer-bgname {
+  animation: subtlePulse 6s ease-in-out infinite;
+  transition: opacity 0.4s ease;
+}
+.site-footer-bgname:hover {
+  opacity: 0.18 !important;
+  animation-play-state: paused;
+}
+
+/* --- Enhanced card hover (light sections) --- */
+
+section#experience div[class*="border border-["] {
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+              border-color 0.2s ease,
+              box-shadow 0.25s ease !important;
+}
+section#activities div[class*="border border-["] {
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+              border-color 0.2s ease,
+              box-shadow 0.25s ease !important;
+}
+
+/* --- Filter button active bounce --- */
+
+section#about .about-filter-button,
+section#experience .experience-filter-button {
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+section#about .about-filter-button:active,
+section#experience .experience-filter-button:active {
+  transform: scale(0.94) !important;
+}
+
+/* --- Header nav link hover slide-up --- */
+
+header nav a:not([href="#contact"]) {
+  position: relative;
+  overflow: hidden;
+}
+
+/* --- Button active micro-feedback --- */
+
+button:not(.about-filter-button):not(.experience-filter-button):active {
+  transform: scale(0.96) !important;
+}
+
+/* --- Contact card hover (footer) --- */
+
+a[class*="border"][class*="p-4"] {
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+              border-color 0.2s ease,
+              box-shadow 0.25s ease,
+              background 0.2s ease !important;
+}
+
+/* --- Skill bar fill transition --- */
+
+section#about div[class*="cursor-default"] > div[class*="h-px"] > div {
+  transition: width 0.9s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
